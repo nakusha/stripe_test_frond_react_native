@@ -50,6 +50,15 @@ const BillingService = {
       method:'get',
     });
   },
+  getInvoice:(param) => {
+    const host = 'http://10.0.2.2:4242';
+    const path = '/billing/getInvocie';
+    console.log(`Invoice URL : ${host}${path}${param}`)
+    return request({
+      url:`${host}${path}${param}`,
+      method:'get',
+    });
+  },
 }
 
 export default BillingService;

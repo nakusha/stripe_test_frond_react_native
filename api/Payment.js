@@ -21,12 +21,12 @@ const PaymentService = {
       data:data
     });
   },
-  getPaymentIntet:(id) => {
+  getPaymentIntet:(param) => {
     const host = 'http://10.0.2.2:4242';
     const path = '/payment/paymentIntent';
 
     return request({
-      url:`${host}${path}/${id}`,
+      url:`${host}${path}${param}`,
       method:'get',
     });
   }

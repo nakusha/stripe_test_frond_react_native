@@ -28,7 +28,7 @@ export default async function request({url, method, data, _config}) {
       console.log("post Data : ", url, data, config)
       var result = await axiosInstance.post(url, data, config);
       console.log("=========================================================");
-      console.log("Result", result.data);
+      console.log("Result", JSON.stringify(result.data));
       console.log("=========================================================");
       return result;
     case 'patch':

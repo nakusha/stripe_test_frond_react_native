@@ -20,13 +20,14 @@ const App = () => {
   const [pm, setPM] = useState();
   const [customer, setCustomer] = useState();
   const [price, setPrice] = useState();
+  const [deposit, setDeposit] = useState();
   const [subscription, setSubscription] = useState();
   const [subSchedule, setSubSchedule] = useState();
 
   const getPaymentMethod = async () => {
     const card = {
-      // number: "4000002500003155",
-      number: "4242424242424242",
+      number: "4000002500003155",
+      // number: "4242424242424242",
       exp_month: 12,
       exp_year: 2022,
       cvc: "123"
@@ -47,23 +48,46 @@ const App = () => {
   const createPrice = async () => {
     const price = {
       name:'Car Name',
-      amount:10000
+      isRecurring:true,
+      interval:'day',
+      amount:3000,
     }
     const result = await BillingService.createPrice(price);
     setPrice(result.data.id)
   }
 
+  const createDeposit = async () => {
+    const price = {
+      name:'Deposit',
+      isRecurring:false,
+      amount:4000
+    }
+    const result = await BillingService.createPrice(price);
+    setDeposit(result.data.id)
+  }
+
   const createSubscription = async () => {
     const sub = {
       customer:customer,
-      price:price
+      price:price,
+      deposit: deposit ? deposit : null,
     }
 
     const result = await BillingService.createSubscription(sub);
-    console.log(result.data.status)
+    console.log("URLS", result.data.items.url)
     if (result.data.status === 'active') {
       setSubscription(result.data.id)
     }else if (result.data.status === 'incomplete') {
+      setSubscription(result.data.status)
+      let param = `?id=${result.data.latest_invoice}`
+      const invoiceInfo = await BillingService.getInvoice(param);
+    
+      if (invoiceInfo.data.payment_intent) {
+        param = `?id=${invoiceInfo.data.payment_intent}`;
+        const paymentIntent = await PaymentService.getPaymentIntet(param);
+        console.log("PI : ", paymentIntent.data.next_action.use_stripe_sdk.stripe_js)
+      }
+    }else {
       setSubscription(result.data.status)
       console.log(result.data)
     }
@@ -76,12 +100,21 @@ const App = () => {
     const sub = {
       customer:customer,
       price:price,
-      start_date:'',
+      deposit: deposit ? deposit : null,
+      // start_date:moment().add(1, 'M').set('hour',9).set('minute',0).set('second',0).set('millisecond',0).format('x')/1000,
+      start_date:moment().add(1, 'h').set('second',0).set('millisecond',0).format('x')/1000,
       iterations:3
     }
 
-    const result = await BillingService.createSubscription(sub);
-    setSubscription(result.data.id)
+    const result = await BillingService.createSubSchedule(sub);
+    if (result.data.status === 'active') {
+      setSubSchedule(result.data.id)
+    }else if (result.data.status === 'incomplete') {
+      setSubSchedule(result.data.status)
+      console.log(result.data)
+    }else {
+      setSubSchedule(result.data.status)
+    }
   }
    
   return (
@@ -103,6 +136,12 @@ const App = () => {
        style={styles.blueButton}
        onPress={createPrice}>
         <Text>Create Price</Text>
+      </TouchableOpacity>
+      <Text style={styles.infoText}>{deposit}</Text>
+      <TouchableOpacity
+       style={styles.blueButton}
+       onPress={createDeposit}>
+        <Text>Create Deposit</Text>
       </TouchableOpacity>
       <Text style={styles.infoText}>{subscription}</Text>
       <TouchableOpacity
