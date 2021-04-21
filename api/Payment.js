@@ -29,7 +29,16 @@ const PaymentService = {
       url:`${host}${path}${param}`,
       method:'get',
     });
-  }
+  },
+  refundPaymentIntent:(param) => {
+    const host = 'http://10.0.2.2:4242';
+    const path = '/payment/refundPayment';
+
+    return request({
+      url:`${host}${path}${param}`,
+      method:'get',
+    });
+  },
 }
 
 export default PaymentService;

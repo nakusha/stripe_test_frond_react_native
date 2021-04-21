@@ -23,11 +23,13 @@ const App = () => {
   const [deposit, setDeposit] = useState();
   const [subscription, setSubscription] = useState();
   const [subSchedule, setSubSchedule] = useState();
+  const sub_id = "sub_JIzT7IjEC3VGBW";
+  const sub_id2 = "sub_JKnHVonieIYl91";
 
   const getPaymentMethod = async () => {
     const card = {
-      number: "4000002500003155",
-      // number: "4242424242424242",
+      // number: "4000002500003155",
+      number: "4242424242424242",
       exp_month: 12,
       exp_year: 2022,
       cvc: "123"
@@ -47,7 +49,7 @@ const App = () => {
 
   const createPrice = async () => {
     const price = {
-      name:'Car Name',
+      name:'Subscription Test',
       isRecurring:true,
       interval:'day',
       amount:3000,
@@ -81,7 +83,7 @@ const App = () => {
       setSubscription(result.data.status)
       let param = `?id=${result.data.latest_invoice}`
       const invoiceInfo = await BillingService.getInvoice(param);
-    
+      console.log("INVOCIE STATUS : ", invoiceInfo.status)
       if (invoiceInfo.data.payment_intent) {
         param = `?id=${invoiceInfo.data.payment_intent}`;
         const paymentIntent = await PaymentService.getPaymentIntet(param);
@@ -102,7 +104,7 @@ const App = () => {
       price:price,
       deposit: deposit ? deposit : null,
       // start_date:moment().add(1, 'M').set('hour',9).set('minute',0).set('second',0).set('millisecond',0).format('x')/1000,
-      start_date:moment().add(1, 'h').set('second',0).set('millisecond',0).format('x')/1000,
+      start_date:moment().add(1, 'm').set('second',0).set('millisecond',0).format('x')/1000,
       iterations:3
     }
 
@@ -111,12 +113,58 @@ const App = () => {
       setSubSchedule(result.data.id)
     }else if (result.data.status === 'incomplete') {
       setSubSchedule(result.data.status)
-      console.log(result.data)
+      let param = `?id=${result.data.latest_invoice}`
+      const invoiceInfo = await BillingService.getInvoice(param);
+    
+      if (invoiceInfo.data.payment_intent) {
+        param = `?id=${invoiceInfo.data.payment_intent}`;
+        const paymentIntent = await PaymentService.getPaymentIntet(param);
+        console.log("PI : ", paymentIntent.data.next_action.use_stripe_sdk.stripe_js)
+      }
     }else {
       setSubSchedule(result.data.status)
     }
   }
+
+  const getSubscription = async () => {
+    const param = `?id=${sub_id}`
+    const result = await BillingService.getSubscription(param);
+    console.log("Subscription Info : ", JSON.stringify(result.data))
+  }
    
+  const getCustomer = async () => {
+    const param = '?id=cus_JIzQU7bSjvg8JM'
+    const result = await BillingService.getCustomer(param);
+    console.log(JSON.stringify(result.data))
+  }
+
+  const refundInvoice = async () => {
+    const param = `?id=${sub_id2}`
+    const result = await BillingService.getInvoiceListBySubscription(param);
+    const pi_list = result.data.data.map(data => {
+      return data.payment_intent;
+    })
+    
+    await Promise.all(pi_list.map(pi => {
+      if (pi) {
+        console.log(pi)
+        refundPayment(pi);
+      }  
+    }))
+  }
+
+  const refundPayment = async (pi) => {
+    const param = `?id=${pi}`
+    const result = await PaymentService.refundPaymentIntent(param)
+    console.log(result.data);
+  }
+
+  const cancelSubscription = async () => {
+    const param = `?id=${sub_id2}`
+    const result = await BillingService.cancelSubscription(param)
+    console.log(result.data);
+  }
+
   return (
     <View style={{paddingTop:10, backgroundColor:'#1e1f34', flex:1}}>
       <Text style={styles.infoText}>{pm}</Text>
@@ -152,8 +200,13 @@ const App = () => {
       <Text style={styles.infoText}>{subSchedule}</Text>
       <TouchableOpacity
        style={styles.blueButton}
-       onPress={createSubSchedule}>
-        <Text>Create SubSchedule</Text>
+       onPress={cancelSubscription}>
+        <Text>Cancel Subscription</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+       style={styles.blueButton}
+       onPress={refundInvoice}>
+        <Text>Refund Invoice</Text>
       </TouchableOpacity>
       {/* <WebView
         source={{uri: uri}}
