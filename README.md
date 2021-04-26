@@ -4,8 +4,8 @@
 
 ## Install Chocolatey
 > https://docs.chocolatey.org/en-us/choco/setup
-> 설치(window cmd - 관리자권한)
->> Copy & Paste
+> 설치(window cmd - 관리자권한)\
+>> Copy & Paste\
 >> @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
 ### Install Package Using Chocolatey
@@ -13,12 +13,12 @@
 
 
 ## Android Setting
-> Install Android Studio - Download and Install
-> https://developer.android.com/studio
-> 아래 체크박스 확인(Custom - 다체크되어 있긴함)
->> Android SDK
->> Android SDK Platform
->> Android Virtual Device
+> Install Android Studio - Download and Install\
+> https://developer.android.com/studio\
+> 아래 체크박스 확인(Custom - 다체크되어 있긴함)\
+>> Android SDK\
+>> Android SDK Platform\
+>> Android Virtual Device\
 >> If you are not already using Hyper-V: Performance (Intel ® HAXM) (See here for AMD or Hyper-V)
 
 ### 실행후 우측하단 Configure->SDK Manager
