@@ -1,5 +1,6 @@
 # React Native Instll
-> https://reactnative.dev/docs/environment-setup
+> https://reactnative.dev/docs/environment-setup  
+> git config --global http.sslVerify false  
 
 
 ## Install Chocolatey
