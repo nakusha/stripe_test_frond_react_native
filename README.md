@@ -1,4 +1,4 @@
-# React Native Instll
+# React Native Install
 > https://reactnative.dev/docs/environment-setup  
 > git config --global http.sslVerify false  
 
